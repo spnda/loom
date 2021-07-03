@@ -39,6 +39,9 @@ CreateLinkResult Shortcut::CreateLink() {
     // Create the directory, if not already.
     fs::create_directories(this->link_location.parent_path());
 
+    // Check if the source actually exists.
+    if (!fs::exists(this->link_destination)) return CLR_INVALID_SOURCE;
+
     // Check if the link destination is not a directory.
     if (fs::is_directory(this->link_destination)) return CLR_INVALID_SOURCE;
 
