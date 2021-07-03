@@ -5,7 +5,6 @@
 #include <filesystem>
 
 // Windows
-#include "winerror.h"
 #include <windows.h>
 #include <shlobj_core.h>
 
@@ -60,6 +59,11 @@ public:
      */
     static const std::vector<Shortcut*> GetAllLinks();
 
+    /**
+     * @brief Gets the path to the AppData folder on windows.
+     */
+    static const fs::path GetAppDataPath();
+
 private:
     /**
      * @brief The location of the shortcut linking to the
@@ -77,9 +81,4 @@ private:
      * @brief Converts the filename to a shortcut filename.
      */
     static const fs::path ConvertFileName(fs::path filename);
-
-    /**
-     * @brief Gets the path to the AppData folder on windows.
-     */
-    static const fs::path GetAppDataPath();
 };
