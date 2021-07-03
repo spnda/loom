@@ -20,6 +20,8 @@ bool replace(std::string& str, const std::string& from, const std::string& to) {
 Shortcut* Shortcut::FromFile(fs::path link_file) {
     // Read the first line of the file.
     std::ifstream link(link_file);
+    std::string dummy_line;
+    getline(link, dummy_line);
     std::string link_destination;
     getline(link, link_destination);
 
@@ -51,9 +53,9 @@ CreateLinkResult Shortcut::CreateLink() {
 
     // Create the file and add its contents.
     std::ofstream file(this->link_location);
-    file << "rem \"" << this->link_destination.string() << "\"" << std::endl;
     file << "@echo off" << std::endl;
-    file << "call \"" << this->link_destination.string() << "\"" << std::endl;
+    file << "rem \"" << this->link_destination.string() << "\"" << std::endl;
+    file << "call \"" << this->link_destination.string() << "\" %*" << std::endl;
     file.close();
 
     return CLR_SUCCESS;
