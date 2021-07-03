@@ -45,6 +45,10 @@ CreateLinkResult Shortcut::CreateLink() {
     // Check if the link destination is not a directory.
     if (fs::is_directory(this->link_destination)) return CLR_INVALID_SOURCE;
 
+    // Don't allow other programs called "loom".
+    if (strcmp(this->link_location.filename().string().c_str(), "loom.cmd") == 0)
+        return CLR_INVALID_SOURCE;
+
     // Create the file and add its contents.
     std::ofstream file(this->link_location);
     file << "rem \"" << this->link_destination.string() << "\"" << std::endl;
