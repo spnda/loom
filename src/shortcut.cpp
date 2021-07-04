@@ -3,6 +3,8 @@
 
 #include "shortcut.hpp"
 
+using namespace std::literals;
+
 // namespace fs = std::filesystem;
 
 /**
@@ -17,9 +19,13 @@ bool replace(std::string& str, const std::string& from, const std::string& to) {
     return true;
 }
 
-Shortcut* Shortcut::FromFile(fs::path link_file) {
+Shortcut* Shortcut::FromFile(std::string link_name) {
+    fs::path path = GetAppDataPath();
+    path /= "Loom";
+    path /= link_name;
+
     // Read the first line of the file.
-    std::ifstream link(link_file);
+    std::ifstream link(path);
     std::string dummy_line;
     getline(link, dummy_line);
     std::string link_destination;
@@ -28,12 +34,12 @@ Shortcut* Shortcut::FromFile(fs::path link_file) {
     // We store the destination in the first line
     // of the file as a batch comment.
     replace(link_destination, "rem ", "");
-    Shortcut* sh = new Shortcut(link_file);
-    sh->link_destination = link_destination;
+    Shortcut* sh = new Shortcut(link_destination);
+    sh->link_location = path;
     return sh;
 }
 
-CreateLinkResult Shortcut::CreateLink() {
+CreateLinkResult Shortcut::CreateLink() const {
     // Check if the link already exists.
     // Possibly a naming collision.
     if (fs::exists(this->link_location)) return CLR_ALREADY_EXISTS;
@@ -61,11 +67,28 @@ CreateLinkResult Shortcut::CreateLink() {
     return CLR_SUCCESS;
 }
 
+CreateLinkResult Shortcut::RenameLink(std::string new_name) {
+    // We don't want to allow links to be renamed to loom.
+    if (new_name == "loom"sv) return CLR_INVALID_SOURCE;
+
+    fs::path new_path = this->link_location;
+    new_path.replace_filename(new_name + ".cmd");
+
+    // We don't want to rename this to something that already exists.
+    if (fs::exists(new_path)) return CLR_ALREADY_EXISTS;
+
+    // Rename the file.
+    fs::rename(this->link_location, new_path);
+    this->link_location = new_path;
+    
+    return CLR_SUCCESS;
+}
+
 std::string Shortcut::ToString() {
     return this->GetFileName() + " -> " + this->link_destination.string();
 }
 
-const std::vector<Shortcut*> Shortcut::GetAllLinks() {
+std::vector<Shortcut*> Shortcut::GetAllLinks() {
     std::vector<Shortcut*> ret = {};
         
     fs::path base_folder = GetAppDataPath();
@@ -79,12 +102,12 @@ const std::vector<Shortcut*> Shortcut::GetAllLinks() {
         if (!path.has_extension() || std::strcmp(path.extension().string().c_str(), ".cmd") != 0)
             continue;
 
-        ret.push_back(Shortcut::FromFile(path));
+        ret.push_back(Shortcut::FromFile(path.filename().string()));
     }
 
     return ret;
 }
 
-const fs::path Shortcut::ConvertFileName(fs::path filename) {
+fs::path Shortcut::ConvertFileName(fs::path filename) {
     return filename.replace_extension("cmd");
 }

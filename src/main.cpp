@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
                 // For nice formatting, we'll fix the arrows to be the same
                 // offset on each line.
                 size_t max_length = 5;
-                
+
                 // Calculate max link name length.
                 for (auto& link : links) {
                     auto name = link->GetFileName();
@@ -51,12 +51,25 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
+    } else if (argv[1] == "rename"sv) {
+        // Rename command allows a user to rename a link to have 2 seperate links
+        // to 2 differnt executables, which are both named the same.
+        if (argc < 3) {
+            std::cout << "Please enter a old and new name. <loom rename old new>." << std::endl;
+        } else {
+            std::string oldName(argv[2]);
+            std::string newName(argv[3]);
+
+            Shortcut* sh = Shortcut::FromFile(oldName + ".cmd");
+            sh->RenameLink(newName);
+            std::cout << "Successfully renamed " << oldName << " to " << newName << "." << std::endl;
+        }
     } else if (argv[1] == "init"sv) {
         if (AddLoomToPath()) {
             std::cout << "Loom has been initialized!" << std::endl;
         }
     } else {
-        std::cout << "Unknown command. Use <loom add|list|init> instead.";
+        std::cout << "Unknown command. Use <loom add|rename|list|init> instead.";
     }
 
     return 0;

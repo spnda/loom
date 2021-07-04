@@ -39,8 +39,11 @@ public:
     /**
      * @brief Reads a shortcut file and creates a instance based on
      *        its contents.
+     * 
+     * @param link_name This should meerely be the name of the link file,
+     *                  and not its path.
      */
-    static Shortcut* FromFile(fs::path link_file);
+    static Shortcut* FromFile(std::string link_name);
 
     /**
      * @brief Creates a new shortcut file.
@@ -49,7 +52,15 @@ public:
      *         False if the file exists already or there was
      *         some error during writing.
      */
-    CreateLinkResult CreateLink();
+    CreateLinkResult CreateLink() const;
+
+    /**
+     * @brief Renames this link, keeping the destination the same.
+     * 
+     * @param new_name Should be the new file name, not the actual
+     *                 path to the new link.
+     */
+    CreateLinkResult RenameLink(std::string new_name);
 
     /**
      * @brief Returns a string representation of this link file.
@@ -68,7 +79,7 @@ public:
      * 
      * @return A vector with the full path to each link.
      */
-    static const std::vector<Shortcut*> GetAllLinks();
+    static std::vector<Shortcut*> GetAllLinks();
 
 private:
     /**
@@ -80,5 +91,5 @@ private:
     /**
      * @brief Converts the filename to a shortcut filename.
      */
-    static const fs::path ConvertFileName(fs::path filename);
+    static fs::path ConvertFileName(fs::path filename);
 };
