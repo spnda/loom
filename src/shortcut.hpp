@@ -4,9 +4,7 @@
 #include <fstream>
 #include <filesystem>
 
-// Windows
-#include <windows.h>
-#include <shlobj_core.h>
+#include "registry.hpp"
 
 namespace fs = std::filesystem;
 
@@ -24,7 +22,7 @@ public:
     Shortcut(fs::path path) : link_destination(path) {
         // Create the path to the shortcut.
         // We use "AppData/Roaming/Loom/filename.cmd"
-        link_location = this->GetAppDataPath();
+        link_location = GetAppDataPath();
         link_location /= "Loom"; // Our main folder.
         link_location /= this->ConvertFileName(path.filename());
 
@@ -58,11 +56,6 @@ public:
      * @return A vector with the full path to each link.
      */
     static const std::vector<Shortcut*> GetAllLinks();
-
-    /**
-     * @brief Gets the path to the AppData folder on windows.
-     */
-    static const fs::path GetAppDataPath();
 
 private:
     /**

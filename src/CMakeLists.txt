@@ -9,6 +9,7 @@ endfunction()
 
 add_files(
 	"main.cpp"
+	"registry.hpp"
 	"shortcut.cpp"
 	"shortcut.hpp"
 )

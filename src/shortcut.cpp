@@ -68,7 +68,7 @@ std::string Shortcut::toString() {
 const std::vector<Shortcut*> Shortcut::GetAllLinks() {
     std::vector<Shortcut*> ret = {};
         
-    fs::path base_folder = Shortcut::GetAppDataPath();
+    fs::path base_folder = GetAppDataPath();
     base_folder /= "Loom"; // Our main folder.
 
     // Read all files in our folder.
@@ -87,23 +87,4 @@ const std::vector<Shortcut*> Shortcut::GetAllLinks() {
 
 const fs::path Shortcut::ConvertFileName(fs::path filename) {
     return filename.replace_extension("cmd");
-}
-
-const fs::path Shortcut::GetAppDataPath() {
-    // Get the AppData folder.
-    PWSTR path = 0; // <-- This is a wchar_t* holding the path in unicode.
-    auto result = SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_CREATE | KF_FLAG_DONT_UNEXPAND | KF_FLAG_NO_ALIAS, NULL, &path);
-
-    if (!SUCCEEDED(result)) {
-        std::cout << std::system_category().message(result) << std::endl;
-    }
-
-    // Convert our PWSTR into a stringstream.
-    std::wstringstream ss;
-    ss << path;
-
-    // We have to free the memory of the path ourselfs.
-    CoTaskMemFree(static_cast<void*>(path));
-
-    return fs::path(ss.str());
 }
