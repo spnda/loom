@@ -61,8 +61,8 @@ CreateLinkResult Shortcut::CreateLink() {
     return CLR_SUCCESS;
 }
 
-std::string Shortcut::toString() {
-    return this->link_location.filename().replace_extension("").string() + " -> " + this->link_destination.string();
+std::string Shortcut::ToString() {
+    return this->GetFileName() + " -> " + this->link_destination.string();
 }
 
 const std::vector<Shortcut*> Shortcut::GetAllLinks() {

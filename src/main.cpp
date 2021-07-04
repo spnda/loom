@@ -23,8 +23,32 @@ int main(int argc, char* argv[]) {
         if (links.size() == 0) {
             std::cout << "No links have been created yet. Use <loom add> to add more." << std::endl;
         } else {
-            for (auto& link : links) {
-                std::cout << link->toString() << std::endl;
+            if (links.size() == 1) {
+                std::cout << links.front()->ToString() << std::endl;
+            } else {
+                // For nice formatting, we'll fix the arrows to be the same
+                // offset on each line.
+                size_t max_length = 5;
+                
+                // Calculate max link name length.
+                for (auto& link : links) {
+                    auto name = link->GetFileName();
+                    if (name.size() > max_length) {
+                        // + 1 to give it some extra spacing.
+                        max_length = name.size() + 1;
+                    }
+                }
+
+                // Print the links and fix indentation.
+                for (auto& link : links) {
+                    auto name = link->GetFileName();
+                    if (name.size() <= max_length) {
+                        for (size_t i = name.size(); i <= max_length; i++) {
+                            name += " ";
+                        }
+                    }
+                    std::cout << name << " -> " << link->link_destination.string() << std::endl;
+                }
             }
         }
     } else if (argv[1] == "init"sv) {

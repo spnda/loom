@@ -17,6 +17,12 @@ enum CreateLinkResult {
 class Shortcut {
 public:
     /**
+     * @brief The location of where the program/executable
+     *        to link is.
+     */
+    fs::path link_destination;
+
+    /**
      * @brief A new shortcut that links to "path".
      */
     Shortcut(fs::path path) : link_destination(path) {
@@ -48,7 +54,14 @@ public:
     /**
      * @brief Returns a string representation of this link file.
      */
-    std::string toString();
+    std::string ToString();
+
+    /**
+     * @brief Get the name of the link file (without the extension).
+     */
+    std::string GetFileName() {
+        return this->link_location.filename().replace_extension("").string();
+    }
 
     /**
      * @brief Gets a list of all links that have been created.
@@ -63,12 +76,6 @@ private:
      *        program.
      */
     fs::path link_location;
-
-    /**
-     * @brief The location of where the program/executable
-     *        to link is.
-     */
-    fs::path link_destination;
 
     /**
      * @brief Converts the filename to a shortcut filename.
