@@ -11,12 +11,35 @@ using namespace std::literals;
  * Replaces a string inside another string with a string.
  * Thanks to https://stackoverflow.com/a/3418285/9156308.
  */
-bool replace(std::string& str, const std::string& from, const std::string& to) {
+static inline bool replace(std::string& str, const std::string& from, const std::string& to) {
     size_t start_pos = str.find(from);
     if (start_pos == std::string::npos)
         return false;
     str.replace(start_pos, from.length(), to);
     return true;
+}
+
+/**
+ * Replaces all occurences of "from" in "str" to "to".
+ * Thanks to https://stackoverflow.com/a/29752943/9156308.
+ */
+static inline void replaceAll(std::string& source, const std::string& from, const std::string& to) {
+    std::string newString;
+    newString.reserve(source.length());
+
+    size_t lastPos = 0;
+    size_t findPos;
+
+    while((findPos = source.find(from, lastPos)) != std::string::npos) {
+        newString.append(source, lastPos, findPos - lastPos);
+        newString += to;
+        lastPos = findPos + from.length();
+    }
+
+    // Care for the rest after last occurrence
+    newString += source.substr(lastPos);
+
+    source.swap(newString);
 }
 
 Shortcut* Shortcut::FromFile(std::string link_name) {
@@ -81,6 +104,31 @@ EditLinkResult Shortcut::RenameLink(std::string new_name) {
     fs::rename(this->link_location, new_path);
     this->link_location = new_path;
     
+    return ELR_SUCCESS;
+}
+
+EditLinkResult Shortcut::ChangeDestination(fs::path destination) {
+    // Check if the source actually exists.
+    if (!fs::exists(destination)) return ELR_INVALID_SOURCE;
+
+    // Check if the link destination is not a directory.
+    if (fs::is_directory(destination)) return ELR_INVALID_SOURCE;
+
+    // Read the entire file as a std::string.
+    std::ifstream file(this->link_location);
+    std::stringstream ss;
+    ss << file.rdbuf();
+    file.close();
+
+    std::string content = ss.str();
+    // We can still use this->link_destination, as it has not been updated yet.
+    replaceAll(content, this->link_destination.string(), "\"" + destination.string() + "\"");
+    this->link_destination = destination;
+
+    std::ofstream outFile(this->link_location);
+    outFile << content;
+    outFile.close();
+
     return ELR_SUCCESS;
 }
 

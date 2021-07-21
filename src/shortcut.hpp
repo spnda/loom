@@ -63,6 +63,11 @@ public:
     EditLinkResult RenameLink(std::string new_name);
 
     /**
+     * @brief Changes the link's destination to the new path.
+     */
+    EditLinkResult ChangeDestination(fs::path destination);
+
+    /**
      * @brief Returns a string representation of this link file.
      */
     std::string ToString();

@@ -68,6 +68,20 @@ int main(int argc, char* argv[]) {
         if (AddLoomToPath()) {
             std::cout << "Loom has been initialized!" << std::endl;
         }
+    } else if (argv[1] == "change"sv) {
+        if (argc < 3) {
+            std::cout << "Please enter a name and new destination. <loom change name destinaion>." << std::endl;
+        } else {
+            std::string linkName(argv[2]);
+            std::string newDestination(argv[3]);
+
+            Shortcut* sh = Shortcut::FromFile(linkName + ".cmd");
+            if (sh->ChangeDestination(fs::path(newDestination)) != ELR_SUCCESS) {
+                std::cout << "Failed to change the destination of " << linkName << " to " << newDestination << std::endl;
+            } else {
+                std::cout << "Successfully changed the destination of " << linkName << " to " << newDestination << std::endl;
+            }
+        }
     } else {
         std::cout << "Unknown command. Use <loom add|rename|list|init> instead.";
     }
