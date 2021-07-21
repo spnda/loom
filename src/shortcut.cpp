@@ -39,23 +39,23 @@ Shortcut* Shortcut::FromFile(std::string link_name) {
     return sh;
 }
 
-CreateLinkResult Shortcut::CreateLink() const {
+EditLinkResult Shortcut::CreateLink() const {
     // Check if the link already exists.
     // Possibly a naming collision.
-    if (fs::exists(this->link_location)) return CLR_ALREADY_EXISTS;
+    if (fs::exists(this->link_location)) return ELR_ALREADY_EXISTS;
 
     // Create the directory, if not already.
     fs::create_directories(this->link_location.parent_path());
 
     // Check if the source actually exists.
-    if (!fs::exists(this->link_destination)) return CLR_INVALID_SOURCE;
+    if (!fs::exists(this->link_destination)) return ELR_INVALID_SOURCE;
 
     // Check if the link destination is not a directory.
-    if (fs::is_directory(this->link_destination)) return CLR_INVALID_SOURCE;
+    if (fs::is_directory(this->link_destination)) return ELR_INVALID_SOURCE;
 
     // Don't allow other programs called "loom".
     if (strcmp(this->link_location.filename().string().c_str(), "loom.cmd") == 0)
-        return CLR_INVALID_SOURCE;
+        return ELR_INVALID_SOURCE;
 
     // Create the file and add its contents.
     std::ofstream file(this->link_location);
@@ -64,24 +64,24 @@ CreateLinkResult Shortcut::CreateLink() const {
     file << "call \"" << this->link_destination.string() << "\" %*" << std::endl;
     file.close();
 
-    return CLR_SUCCESS;
+    return ELR_SUCCESS;
 }
 
-CreateLinkResult Shortcut::RenameLink(std::string new_name) {
+EditLinkResult Shortcut::RenameLink(std::string new_name) {
     // We don't want to allow links to be renamed to loom.
-    if (new_name == "loom"sv) return CLR_INVALID_SOURCE;
+    if (new_name == "loom"sv) return ELR_INVALID_SOURCE;
 
     fs::path new_path = this->link_location;
     new_path.replace_filename(new_name + ".cmd");
 
     // We don't want to rename this to something that already exists.
-    if (fs::exists(new_path)) return CLR_ALREADY_EXISTS;
+    if (fs::exists(new_path)) return ELR_ALREADY_EXISTS;
 
     // Rename the file.
     fs::rename(this->link_location, new_path);
     this->link_location = new_path;
     
-    return CLR_SUCCESS;
+    return ELR_SUCCESS;
 }
 
 std::string Shortcut::ToString() {

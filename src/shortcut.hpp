@@ -8,10 +8,10 @@
 
 namespace fs = std::filesystem;
 
-enum CreateLinkResult {
-    CLR_SUCCESS = 0,
-    CLR_ALREADY_EXISTS = 1,
-    CLR_INVALID_SOURCE = 2,
+enum EditLinkResult {
+    ELR_SUCCESS = 0,
+    ELR_ALREADY_EXISTS = 1,
+    ELR_INVALID_SOURCE = 2,
 };
 
 class Shortcut {
@@ -52,7 +52,7 @@ public:
      *         False if the file exists already or there was
      *         some error during writing.
      */
-    CreateLinkResult CreateLink() const;
+    EditLinkResult CreateLink() const;
 
     /**
      * @brief Renames this link, keeping the destination the same.
@@ -60,7 +60,7 @@ public:
      * @param new_name Should be the new file name, not the actual
      *                 path to the new link.
      */
-    CreateLinkResult RenameLink(std::string new_name);
+    EditLinkResult RenameLink(std::string new_name);
 
     /**
      * @brief Returns a string representation of this link file.

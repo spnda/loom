@@ -12,8 +12,8 @@ int main(int argc, char* argv[]) {
         std::string path(argv[2]);
         Shortcut* sc = new Shortcut(fs::path(path));
 
-        CreateLinkResult result = sc->CreateLink();
-        if (result == CLR_SUCCESS) {
+        EditLinkResult result = sc->CreateLink();
+        if (result == ELR_SUCCESS) {
             std::cout << "Successfully created link." << std::endl;
         } else {
             std::cout << "Failed to create link. Not valid path or it might already exist?" << std::endl;
